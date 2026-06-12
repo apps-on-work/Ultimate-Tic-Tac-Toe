@@ -31,15 +31,13 @@ bool turnchange(ll position, char symbol){
     board[i][j]=symbol;
     return true;
 }
-bool computer_turnchange(char symbol){
+void computer_turnchange(char symbol){
     for(ll position=1;position<=9;++position){
         ll i=(position-1)/3,j=(position-1)%3;
         if(board[i][j]!='X' && board[i][j]!='O'){
-            board[i][j]=symbol;
-            return true;
+            board[i][j]=symbol;break;
         }
     }
-    return false;
 }
 char choose_symbol(){
     char symbol;string str;
@@ -51,14 +49,42 @@ char choose_symbol(){
     }
     return symbol;
 }
+char winner(){
+    for(ll i{};i<3;++i){
+        if(board[i][0]==board[i][1] && board[i][1]==board[i][2]){
+            return board[i][0];
+        }
+    }
+    for(ll i{};i<3;++i){
+        if(board[0][i]==board[1][i] && board[1][i]==board[2][i]){
+            return board[0][i];
+        }
+    }
+    if(board[0][0]==board[1][1] && board[1][1]==board[2][2]){
+        return board[0][0];
+    }
+    if(board[0][2]==board[1][1] && board[1][1]==board[2][0]){
+        return board[0][2];
+    }
+    for(ll position=1;position<=9;++position){
+        ll i=(position-1)/3,j=(position-1)%3;
+        if(board[i][j]!='X' && board[i][j]!='O') return 'U';
+    }
+    return 'D';
+}
 int main()
 {
     initializeboard();
+    printboard();
     char symbol=choose_symbol();
     char computer_symbol;
     if(symbol=='X')computer_symbol='O';
     else if(symbol=='O')computer_symbol='X';
-    printboard();
+    if(computer_symbol=='X'){
+        computer_turnchange(computer_symbol);
+        cout<<"Computer's turn: "<<endl;
+        printboard();
+    }
     while(1){
         ll position=0;bool turn_taken=false;
         while(!turn_taken){
@@ -69,9 +95,49 @@ int main()
             }
             turn_taken=turnchange(position, symbol);
         }
+        cout<<"Your turn: "<<endl;
         printboard();
-        if(!computer_turnchange(computer_symbol)) break;
+        char checkwinner=winner();
+        if(checkwinner=='D'){
+            cout<<"-----------"<<endl;
+            cout<<"----DRAW---"<<endl;
+            cout<<"-----------"<<endl;
+            break;
+        }else if(checkwinner==symbol){
+            cout<<"-----------"<<endl;
+            cout<<"-YOU WIN!!-"<<endl;
+            cout<<"--PERFECT--"<<endl;
+            cout<<"-----------"<<endl;
+            break;
+        }else if(checkwinner==computer_symbol){
+            cout<<"-----------"<<endl;
+            cout<<"-YOU LOSE!-"<<endl;
+            cout<<"--GARBAGE--"<<endl;
+            cout<<"-----------"<<endl;
+            break;
+        }
+        computer_turnchange(computer_symbol);
+        cout<<"Computer's turn: "<<endl;
         printboard();
+        checkwinner=winner();
+        if(checkwinner=='D'){
+            cout<<"-----------"<<endl;
+            cout<<"----DRAW---"<<endl;
+            cout<<"-----------"<<endl;
+            break;
+        }else if(checkwinner==symbol){
+            cout<<"-----------"<<endl;
+            cout<<"-YOU WIN!!-"<<endl;
+            cout<<"--PERFECT--"<<endl;
+            cout<<"-----------"<<endl;
+            break;
+        }else if(checkwinner==computer_symbol){
+            cout<<"-----------"<<endl;
+            cout<<"-YOU LOSE!-"<<endl;
+            cout<<"--GARBAGE--"<<endl;
+            cout<<"-----------"<<endl;
+            break;
+        }
     }
     return 0;
 }
