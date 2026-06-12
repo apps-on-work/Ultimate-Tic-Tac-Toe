@@ -43,10 +43,10 @@ bool computer_turnchange(char symbol){
 }
 char choose_symbol(){
     char symbol;string str;
-    cout<<"Choose a symbol [X] for first turn and [O] for second turn: ";cin>>str;symbol=str[0];
+    cout<<"Choose a symbol [X] for first turn and [O] for second turn: ";getline(cin, str);symbol=str[0];
     symbol=toupper(symbol);
-    while(symbol!='X' && symbol!='O'){
-        cout<<"Invalid input. Enter X or O: ";cin>>str;symbol=str[0];
+    while((symbol!='X' && symbol!='O') || str.size()!=1){
+        cout<<"Invalid input. Enter X or O: ";getline(cin, str);symbol=str[0];
         symbol=toupper(symbol);
     }
     return symbol;
@@ -62,7 +62,11 @@ int main()
     while(1){
         ll position=0;bool turn_taken=false;
         while(!turn_taken){
-            cout<<"Make you move by putting the cell number [0-9]: ";cin>>position;
+            cout<<"Make you move by putting the cell number [0-9]: ";
+            while(!(cin>>position)){
+                cout<<"Invalid input, input beyond scope. Re-enter: ";
+                cin.clear();cin.ignore(1000000, '\n');
+            }
             turn_taken=turnchange(position, symbol);
         }
         printboard();
