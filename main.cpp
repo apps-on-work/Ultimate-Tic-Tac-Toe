@@ -2,12 +2,12 @@
 #include<string>
 #define ll int
 using namespace std;
-string board[3][3];
+char board[3][3];
 void initializeboard(){
     for(ll i{};i<3;++i){
         for(ll j{};j<3;++j){
             ll x=3*i+j+1;
-            board[i][j]=to_string(x);
+            board[i][j]=x+'0';
         }
     }
 }
@@ -18,62 +18,56 @@ void printboard(){
         cout<<"-----------"<<endl;
     }
 }
-ll turnchange(string symbol){
-    ll x=0;cin>>x;
-    if(x>9 || x<1){
+bool turnchange(ll position, char symbol){
+    if(position>9 || position<1){
         cout<<"Invalid input, Cell does not exist!"<<endl;
-        return 0;
+        return false;
     }
-    ll i=(x-1)/3,j=(x-1)%3;
-    if(board[i][j]=="X" || board[i][j]=="O"){
+    ll i=(position-1)/3,j=(position-1)%3;
+    if(board[i][j]=='X' || board[i][j]=='O'){
         cout<<"Invalid input, Cell occupied"<<endl;
-        return 0;
-    }else{
-        board[i][j]=symbol;
-        return 1;
+        return false;
     }
-    
+    board[i][j]=symbol;
+    return true;
 }
-ll computer_turnchange(string symbol){
-    string str;
-    if(symbol=="X") str="O";
-    else if(symbol=="O") str="X";
-    for(ll run=1;run<=9;++run){
-        ll i=(run-1)/3;
-        ll j=(run-1)%3;
-        if(board[i][j]!="X" && board[i][j]!="O"){
-            board[i][j]=str;
-            return 1;
+bool computer_turnchange(char symbol){
+    for(ll position=1;position<=9;++position){
+        ll i=(position-1)/3,j=(position-1)%3;
+        if(board[i][j]!='X' && board[i][j]!='O'){
+            board[i][j]=symbol;
+            return true;
         }
     }
-    return 0;
+    return false;
 }
-string playerturn(){
-    cout<<"Please choose a symbol"<<endl;
-    cout<<"X for first turn or O for second turn"<<endl;
-    string str;cin>>str;
-    while(str!="X" && str!="O"){
-        cout<<"Invalid input, Symbol cannot be Identified!"<<endl<<"Re-enter: "<<endl;
-        cin>>str;
+char choose_symbol(){
+    char symbol;string str;
+    cout<<"Choose a symbol [X] for first turn and [O] for second turn: ";cin>>str;symbol=str[0];
+    symbol=toupper(symbol);
+    while(symbol!='X' && symbol!='O'){
+        cout<<"Invalid input. Enter X or O: ";cin>>str;symbol=str[0];
+        symbol=toupper(symbol);
     }
-    return str;
+    return symbol;
 }
 int main()
 {
-    ios_base::sync_with_stdio(false);cin.tie(nullptr);cout.tie(nullptr);
     initializeboard();
-    string symbol=playerturn();
+    char symbol=choose_symbol();
+    char computer_symbol;
+    if(symbol=='X')computer_symbol='O';
+    else if(symbol=='O')computer_symbol='X';
     printboard();
-    ll board_updated=turnchange(symbol);
-    while(!board_updated)board_updated=turnchange(symbol);
-    printboard();
-    ll computer_board_updated=computer_turnchange(symbol);
-    while(computer_turnchange(symbol)){
+    while(1){
+        ll position=0;bool turn_taken=false;
+        while(!turn_taken){
+            cout<<"Make you move by putting the cell number [0-9]: ";cin>>position;
+            turn_taken=turnchange(position, symbol);
+        }
         printboard();
-        board_updated=turnchange(symbol);
-        while(!board_updated)board_updated=turnchange(symbol);
+        if(!computer_turnchange(computer_symbol)) break;
         printboard();
-        computer_board_updated=computer_turnchange(symbol);
     }
     return 0;
 }
